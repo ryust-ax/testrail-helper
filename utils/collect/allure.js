@@ -32,6 +32,8 @@ function buildCaseReport(testCase) {
 }
 
 function updateReportStatuses(reports) {
+  logger.debug("Update Reports");
+  logger.debug(reports);
   return reports.map((data) => {
     // Check for duplicate or retries
     const duplicate = reports.find((report) => {
@@ -57,10 +59,15 @@ function getFiles(output) {
 }
 
 function getFileData(output, file) {
+  logger.debug("Get File Data");
+  logger.debug(output);
+  logger.debug(file);
   return fs.readFileSync(path.join(output, file)).toString();
 }
 
 function getFileJson(data) {
+  logger.debug("Get Json Data");
+  logger.debug(data);
   return parser.parse(data, {
     attributeNamePrefix: "_",
     ignoreAttributes: false,
@@ -69,10 +76,14 @@ function getFileJson(data) {
 }
 
 function getCases(json) {
+  logger.debug("Extract from Json");
+  logger.debug(json);
   return json["ns2:test-suite"]["test-cases"]["test-case"];
 }
 
 function buildCaseReports(testCases) {
+  logger.debug("Build Case Reports");
+  logger.debug(testCases);
   if (!Array.isArray(testCases)) {
     const report = buildCaseReport(testCases)
     return [report];
@@ -83,6 +94,8 @@ function buildCaseReports(testCases) {
 }
 
 function cleanup(reports) {
+  logger.debug("Cleanup duplicates");
+  logger.debug(reports);
   return reports.reduce((collect, report) => {
     if ("case_id" in report) {
       collect.push(report);
@@ -92,6 +105,9 @@ function cleanup(reports) {
 }
 
 function buildReports(output, files) {
+  logger.debug("Build Reports");
+  logger.debug(output);
+  logger.debug(files);
   return files.flatMap((file) => {
     const data = getFileData(output, file);
     const json = getFileJson(data);

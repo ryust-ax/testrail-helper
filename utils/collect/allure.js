@@ -96,7 +96,7 @@ function updateReportStatuses(reports) {
   return reports.map((data) => {
     // Check for duplicate or retries
     const duplicate = reports.find((report) => {
-      return report.case_id === data.case_id;
+      return report && report.case_id === data.case_id;
     });
     if (duplicate != undefined && duplicate.status_id === 5) {
       data.comment = `This test case has ${data.status} after retry. ${data.comment}`;

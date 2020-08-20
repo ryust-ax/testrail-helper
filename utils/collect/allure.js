@@ -110,7 +110,7 @@ function cleanup(reports) {
   logger.debug("Cleanup duplicates");
   logger.debug(reports);
   return reports.reduce((collect, report) => {
-    if ("case_id" in report) {
+    if (report && "case_id" in report) {
       collect.push(report);
     }
     return collect;
@@ -121,14 +121,16 @@ function buildReports(output, files) {
   logger.debug("Build Reports");
   logger.debug(output);
   logger.debug(files);
-  return files.flatMap((file) => {
+  const reports = files.flatMap((file) => {
     const data = getFileData(output, file);
     const json = getFileJson(data);
     const testCases = getCases(json);
     const reports = buildCaseReports(testCases);
     const submissions = updateReportStatuses(reports);
     return cleanup(submissions);
-  })
+  });
+  logger.debug(reports);
+  return reports;
 }
 
 module.exports = {

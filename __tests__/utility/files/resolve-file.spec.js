@@ -12,7 +12,7 @@ const { Volume } = require("memfs");
 
 const utils = require("../../../utils/files");
 
-describe("Resolve a provided directory", () => {
+describe("Resolve a provided file", () => {
   afterEach(() => {
     (fs).reset();
   });

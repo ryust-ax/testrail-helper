@@ -9,6 +9,10 @@ const systemPath = utils.__get__("systemPath");
 const cwd = () => { return "/root"; }
 
 describe("Get a system path", () => {
+  afterEach(() => {
+    mock.restore();
+  });
+
   test("System Path Stats return for file", () => {
     mock({
       "/root/configPath": {

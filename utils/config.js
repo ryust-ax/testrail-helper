@@ -1,20 +1,21 @@
 "use strict";
 
 const path = require("path");
+const createLogger = require("logging").default;
 
-const { isFile } = require("./files");
+const utils = require(".");
 
-const DEFAULT_CONFIG_FILES = ["testrail.conf.js", "testrail.json"]
+const logger = createLogger("Utility - Config");
 
-function loadConfigFile(configFile) {
+function loadConfigFile(configFile, getFileRequire = require) {
   // .conf.js config file
   if (path.extname(configFile) === ".js") {
-    return require(configFile).config;
+    return getFileRequire(configFile).config;
   }
 
   // json config provided
   if (path.extname(configFile) === ".json") {
-    const contents = files.getFileContents(configFile, "utf8");
+    const contents = utils.getFileContents(configFile, "utf8");
     return JSON.parse(contents);
   }
 
@@ -34,37 +35,34 @@ module.exports = {
    * @param {string} configFile
    * @return {*}
    */
-  load(configFile) {
-    // Find our starting point: provided path or default "."
-    const startingPath = files.resolveDirectory(configFile);
-
-    // Check for defaults
-
-    // is path to directory
-    const [file] = defaultFiles.map((file) => {
-      const checkFile = path.join(configFile, file);
-
-      if (isFile(checkFile)) {
-        return checkFile;
-      }
-      return configPath;
+  load(configFile, defaults = ["testrail.conf.js", "testrail.json"]) {
+    logger.debug("Load configuration");
+    // Add possible defaults
+    const possibleConfigs = [configFile, ...defaults].filter((possible) => {
+      return possible != null;
     });
 
-    if (isFile(file)) {
+    const file = possibleConfigs.find((file) => {
+      try {
+        const found = utils.resolveFile(file)
+        logger.debug(found);
+        return found;
+      } catch (error) {
+        logger.debug(error);
+        return false;
+      }
+    });
+
+    if (utils.isFile(file)) {
       return loadConfigFile(file);
     }
 
-    // is config file
-    if (isFile(configFile)) {
-      return loadConfigFile(configFile);
-    }
-    if (!isFile(configFile)) {
-      throw new Error(
-        `Config file ${configFile} does not exist. Execute 'testrail-helper init' to create config`
-      );
-    }
     throw new Error(
-      `Can not load config from ${file} \nTestRail Helper is not initialized in this dir. Execute 'testrail-helper init' to start`
+      `
+      Can not load config from ${possibleConfigs}.
+      TestRail Helper does not appear to be initialized.
+      Execute 'testrail-helper init' to start
+      `
     );
   },
 };

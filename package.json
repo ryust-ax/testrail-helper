@@ -5,9 +5,11 @@
     "registry": "https://npm.pkg.github.com/@cat-ninja"
   },
   "description": "TestRail plugin",
-  "main": "index.js",
+  "main": "bin/testrail-helper.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint . ",
+    "lintFix": "eslint . --fix",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -30,5 +32,13 @@
     "logging": "^3.2.0",
     "mkdirp": "^1.0.4",
     "moment-timezone": "^0.5.31"
+  },
+  "devDependencies": {
+    "eslint": "^7.5.0",
+    "eslint-config-axcient": "git+ssh://git@github.com/Axcient/eslint-config-axcient.git#semver:^14.0.0",
+    "jest": "^26.4.1",
+    "madge": "^3.9.2",
+    "mock-fs": "^4.13.0",
+    "rewire": "^5.0.0"
   }
 }

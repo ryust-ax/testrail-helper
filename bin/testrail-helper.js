@@ -1,11 +1,13 @@
 #!/usr/bin/env node
-const program = require('commander');
+const program = require("commander");
 
-program.command("init [path]")
+program
+  .command("init [path]")
   .description("Creates dummy config in current dir or [path]")
   .action(require("../lib/command/init"));
 
-program.command("run")
+program
+  .command("run")
   .description("Process Allure reports and send results to TestRail")
 
   // Helper options
@@ -21,8 +23,11 @@ program.command("run")
   // Execute
   .action(require("../lib/command/run"));
 
-program.command("debug")
-  .description("Print debugging information with preceeding DEBUG=* or DEBUG=*TestRail* followed by the command.");
+program
+  .command("debug")
+  .description(
+    "Print debugging information with preceeding DEBUG=* or DEBUG=*TestRail* followed by the command."
+  );
 
 if (process.argv.length <= 2) {
   program.outputHelp();

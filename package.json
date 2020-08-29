@@ -38,7 +38,9 @@
     "eslint-config-axcient": "git+ssh://git@github.com/Axcient/eslint-config-axcient.git#semver:^14.0.0",
     "jest": "^26.4.1",
     "madge": "^3.9.2",
+    "memfs": "^3.2.0",
     "mock-fs": "^4.13.0",
-    "rewire": "^5.0.0"
+    "rewire": "^5.0.0",
+    "unionfs": "^4.4.0"
   }
 }

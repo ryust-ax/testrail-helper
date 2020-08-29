@@ -77,6 +77,12 @@ module.exports = {
     return resolveSystemPath(fullPath);
   },
 
+  resolveFile(configPath) {
+    const starting = resolvePath(configPath);
+    const fullPath = resolveAbsolutePath(starting);
+    return resolveSystemPath(fullPath);
+  },
+
   isFile(filePath) {
     logger.debug("Checking if file");
     logger.debug(filePath);

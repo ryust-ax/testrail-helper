@@ -3,7 +3,7 @@
 const path = require("path");
 const createLogger = require("logging").default;
 
-const utils = require(".");
+const utils = require("./files");
 
 const logger = createLogger("Utility - Config");
 
@@ -42,19 +42,20 @@ module.exports = {
       return possible != null;
     });
 
-    const file = possibleConfigs.find((file) => {
+    // .find() is just true/false return item; need to get resolved path
+    const [found] = possibleConfigs.map((file) => {
       try {
-        const found = utils.resolveFile(file)
-        logger.debug(found);
-        return found;
+        return utils.resolveFile(file)
       } catch (error) {
         logger.debug(error);
         return false;
       }
     });
+    logger.debug(`Found file [${found}]`);
 
-    if (utils.isFile(file)) {
-      return loadConfigFile(file);
+    // Double check is a file not a directory
+    if (utils.isFile(found)) {
+      return loadConfigFile(found);
     }
 
     throw new Error(

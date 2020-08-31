@@ -12,7 +12,11 @@ function resolvePath(providedPath) {
   logger.debug("Determine if default");
   logger.debug(providedPath);
 
-  if (!providedPath) return ".";
+  if (!providedPath) {
+    logger.debug(".");
+    return ".";
+  }
+  logger.debug(providedPath);
   return providedPath;
 }
 
@@ -39,38 +43,40 @@ function resolveAbsolutePath(providedPath) {
 
 // resolves `path`, `/path`, `./path`
 // returns `/_current/working/directory_/path`
-function resolveSystemPath(fullPath) {
+function resolveSystemPath(target, currentPath = process.cwd) {
   logger.debug("Confirm system path");
 
-  const stats = systemPath(fullPath);
-  if (stats.isDirectory() || stats.isFile()) {
-    return fullPath;
+  const stats = checkSystem(target);
+  if (stats && (stats.isDirectory() || stats.isFile())) {
+    logger.debug(`Path exists [${target}]`);
+    return target;
   }
-  throw new Error(`Provided path was neither file nor directory [${fullPath}]`);
+
+  // See if joining to current working directory helps
+  const newPath = path.join(currentPath(), target);
+  logger.debug(`Build Path [${newPath}]`);
+
+  const retryStats = checkSystem(newPath);
+  if (retryStats && (retryStats.isDirectory() || retryStats.isFile())) {
+    logger.debug(`Path exists [${newPath}]`);
+    return newPath;
+  }
+
+  throw new Error(`Unable to resolve to system [${target}] or [${newPath}]`);
 }
 
-function systemPath(target, currentPath = process.cwd) {
+function checkSystem(target) {
   logger.debug("Get stats for target");
   try {
     return fs.lstatSync(target);
   } catch (error) {
     logger.debug(error);
   }
-
-  // See if joining to current working directory helps
-  try {
-    const newPath = path.join(currentPath(), target);
-    logger.debug(newPath);
-    return fs.lstatSync(newPath);
-  } catch (error) {
-    logger.debug(error);
-  }
-
-  throw new Error(`Unable to resolve path to system [${target}]`);
 }
 
 module.exports = {
   resolveDirectory(configPath) {
+    logger.debug(`Resolving directory [${configPath}]`);
     const starting = resolvePath(configPath);
     const directory = resolveDirectoryPath(starting);
     const fullPath = resolveAbsolutePath(directory);
@@ -78,6 +84,7 @@ module.exports = {
   },
 
   resolveFile(configPath) {
+    logger.debug(`Resolving file [${configPath}]`);
     const starting = resolvePath(configPath);
     const fullPath = resolveAbsolutePath(starting);
     return resolveSystemPath(fullPath);
